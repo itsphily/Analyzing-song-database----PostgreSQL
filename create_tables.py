@@ -1,25 +1,23 @@
 import psycopg2
-from sql_queries import create_table_queries, drop_table_queries
+from sql_queries import create_table_queries, drop_table_queries, database_reset
+
 
 def create_database():
-
-    # Connects to a default database
-    # If you intend to run this on your machine you need to make sure the host, dbname, user and password are all valid
+    # connect to default database
     conn = psycopg2.connect("host = 127.0.0.1 dbname=default user=postgres password=phily123")
-    conn.set_session(autocommit = True)
+    conn.set_session(autocommit=True)
     cur = conn.cursor()
 
-    # Creating the new sparkifydb
-    # Drop the database to make sure we reset properly
-    cur.execute("DROP DATABASE IF EXISTS sparkifydb")
-    # Create sparkify database with UTF8 encoding
-    cur.execute("CREATE DATABASE sparkifydb with ENCODING 'utf8' TEMPLATE template0")
+    # Drops and creates a sparkify database with UTF8 encoding
+    for query in database_reset:
+        cur.execute(query)
+        conn.commit()
 
-    # Close connection to default database
+    # close connection to default database
     conn.close()
 
-    # Connect to sparkify database
-    conn = psycopg2.connect("host = 127.0.0.1 dbname = sparkifydb user = postgres password = phily123")
+    # connect to sparkify database
+    conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=student password=student")
     cur = conn.cursor()
 
     return cur, conn
@@ -39,6 +37,7 @@ def create_tables(cur, conn):
 
 def main():
     cur, conn = create_database()
+
     drop_tables(cur, conn)
     create_tables(cur, conn)
 
@@ -47,5 +46,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-

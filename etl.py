@@ -6,6 +6,7 @@ from sql_queries import *
 import json
 
 
+# Given a cursor to a database and a filepath this function opens a song_file and splits the information between the song and artist table
 def process_song_file(cur, filepath):
     # open song file
     df = pd.read_json(filepath, lines=True)
@@ -20,6 +21,7 @@ def process_song_file(cur, filepath):
     cur.execute(artist_table_insert, artist_data)
 
 
+# Given a cursor to a database and a filepath this function opens a log_file and splits the information between the user and time table
 def process_log_file(cur, filepath):
     # open log file
     df = pd.read_json(filepath, lines=True)
@@ -64,6 +66,7 @@ def process_log_file(cur, filepath):
         cur.execute(songplay_table_insert, songplay_data)
 
 
+# feeds the file to our etl pipeline
 def process_data(cur, conn, filepath, func):
     # get all files matching extension from directory
     all_files = []
@@ -84,11 +87,11 @@ def process_data(cur, conn, filepath, func):
 
 
 def main():
-    conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=postgres password=phily123")
+    conn = psycopg2.connect("host=127.0.0.1 dbname = sparkifydb user = postgres password = phily123")
     cur = conn.cursor()
 
-    process_data(cur, conn, filepath='data/song_data', func=process_song_file)
-    process_data(cur, conn, filepath='data/log_data', func=process_log_file)
+    process_data(cur, conn, filepath='data\song_data', func=process_song_file)
+    process_data(cur, conn, filepath='data\log_data', func=process_log_file)
 
     conn.close()
 
